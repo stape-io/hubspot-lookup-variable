@@ -272,7 +272,7 @@ function sendRequest() {
     return formatOutput(storedUserData, data.outputFormat);
   }
 
-  let url = 'https://api.hubapi.com/crm/v3/objects/contacts/' + enc(identifierValue);
+  let url = 'https://api.hubapi.com/crm/2026-03/objects/contacts/' + enc(identifierValue);
   let queryParams = [];
 
   if (data.identifierChoice !== 'id') {
