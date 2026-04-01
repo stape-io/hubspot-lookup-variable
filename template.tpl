@@ -1,4 +1,12 @@
-﻿___INFO___
+﻿___TERMS_OF_SERVICE___
+
+By creating or modifying this file you agree to Google Tag Manager's Community
+Template Gallery Developer Terms of Service available at
+https://developers.google.com/tag-manager/gallery-tos (or such other URL as
+Google may provide), as modified from time to time.
+
+
+___INFO___
 
 {
   "type": "MACRO",
@@ -106,7 +114,7 @@ ___TEMPLATE_PARAMETERS___
           {
             "value": "custom",
             "displayValue": "Return custom properties",
-            "help": "A comma-separated list of user properties to return as an object (e.g., email,firstname,lastname,phone,city).\u003c/br\u003e\nFor the above example, the returned object would be \u003c/br\u003e\n\u003cb\u003e {\u003c/br\u003e\n  email: \u0027jane_doe@email.com\u0027, \u003c/br\u003e\n  firstname: \u0027Jane\u0027, \u003c/br\u003e\n  lastname: \u0027Doe\u0027, \u003c/br\u003e\n  phone: \u0027+5519981555555\u0027, \u003c/br\u003e\n  city: Testland \u003c/br\u003e\n} \u003c/b\u003e\u003c/br\u003e\nIf only one property is chosen, the variable will return its value instead of an object.",
+            "help": "A comma-separated list of user properties to return as an object (e.g., email,firstname,lastname,phone,city).\u003c/br\u003e\nFor the above example, the returned object would be \u003c/br\u003e\n\u003cb\u003e {\u003c/br\u003e\n  email: \u0027jane_doe@email.com\u0027, \u003c/br\u003e\n  firstname: \u0027Jane\u0027, \u003c/br\u003e\n  lastname: \u0027Doe\u0027, \u003c/br\u003e\n  phone: \u0027+5519981555555\u0027, \u003c/br\u003e\n  city: Testland \u003c/br\u003e\n} \u003c/b\u003e\u003c/br\u003e\nIf only one property is chosen, the variable will return its value instead of an object (key/value pair).",
             "subParams": [
               {
                 "type": "TEXT",
@@ -353,11 +361,12 @@ function formatOutput(userData, format) {
   const formattedData = {};
   if (format === 'custom') {
     if (!data.customProperties) return userData;
-    const customPropertiesArray = data.customProperties.split(',');
+    const customPropertiesArray = data.customProperties
+      .split(',')
+      .map((property) => normalizeIfDefined(property));
 
     if (customPropertiesArray.length > 1) {
       customPropertiesArray.forEach((property) => {
-        property = normalizeIfDefined(property);
         formattedData[property] = userData.properties[property];
       });
       return formattedData;

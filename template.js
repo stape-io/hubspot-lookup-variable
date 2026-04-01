@@ -117,11 +117,12 @@ function formatOutput(userData, format) {
   const formattedData = {};
   if (format === 'custom') {
     if (!data.customProperties) return userData;
-    const customPropertiesArray = data.customProperties.split(',');
+    const customPropertiesArray = data.customProperties
+      .split(',')
+      .map((property) => normalizeIfDefined(property));
 
     if (customPropertiesArray.length > 1) {
       customPropertiesArray.forEach((property) => {
-        property = normalizeIfDefined(property);
         formattedData[property] = userData.properties[property];
       });
       return formattedData;
