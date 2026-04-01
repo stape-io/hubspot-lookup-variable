@@ -701,7 +701,7 @@ scenarios:
 - name: Successful API Call - Returns All Data
   code: "const mockData = {\n  apiAccessToken: 'mock-private-app-token',\n  identifierChoice:\
     \ 'email',\n  identifierValue: 'johndoe@example.com',\n  outputFormat: 'all'\n\
-    };\n\nmock('sendHttpRequest', (url, options) => {\n  assertThat(url).isEqualTo('https://api.hubapi.com/crm/v3/objects/contacts/johndoe%40example.com?idProperty=email');\n\
+    };\n\nmock('sendHttpRequest', (url, options) => {\n  assertThat(url).isEqualTo('https://api.hubapi.com/crm/2026-03/objects/contacts/johndoe%40example.com?idProperty=email');\n\
     \  assertThat(options.headers.Authorization).isEqualTo('Bearer mock-private-app-token');\n\
     \  \n  return Promise.create((resolve) => {\n    resolve({\n      statusCode:\
     \ 200,\n      body: JSON.stringify({\n        properties: {\n          email:\
@@ -721,7 +721,7 @@ scenarios:
     };
 
     mock('sendHttpRequest', (url, options) => {
-       assertThat(url).isEqualTo('https://api.hubapi.com/crm/v3/objects/contacts/12345');
+       assertThat(url).isEqualTo('https://api.hubapi.com/crm/2026-03/objects/contacts/12345');
       return Promise.create((resolve) => {
         resolve({
           statusCode: 200,
