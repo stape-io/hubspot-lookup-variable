@@ -4,7 +4,7 @@ This variable template retrieves contact information from the HubSpot CRM Contac
 
 ## Features
 
-- **Direct CRM Integration:** Queries the HubSpot v3 API to fetch up-to-date user data based on unique identifiers like Email or Contact ID.
+- **Direct CRM Integration:** Queries the HubSpot CRM API to fetch up-to-date user data based on unique identifiers like Email or Contact ID.
 
 - **Built-in Caching:** Utilizes Server-Side GTM's `templateDataStorage` to cache responses, preventing redundant API calls for the same user and protecting your HubSpot API quota.
 
@@ -14,11 +14,11 @@ This variable template retrieves contact information from the HubSpot CRM Contac
 
 ### HubSpot Authentication
 
-- **Private App Access Token**: Enter your HubSpot Private App Access Token to act as the Bearer token for API authorization[cite: 1103]. _(Note: Legacy API keys are deprecated; you must use a Private App token )._
+- **Private App Access Token**: Enter your HubSpot Private App Access Token to act as the Bearer token for API authorization. _(Note: Legacy API keys are deprecated; you must use a Private App token )._
 
 ### Lookup Parameters
 
-- **Identifier Choice**: Choose the key used to look up the user in HubSpot[cite: 1104]. Options include:
+- **Identifier Choice**: Choose the key used to look up the user in HubSpot. Options include:
   - **Email**
   - **Contact ID**
   - **Other unique identifier** (Allows you to specify a custom key)

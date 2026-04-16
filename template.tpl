@@ -272,11 +272,15 @@ function sendRequest() {
     data.identifierChoice === 'other'
       ? makeString(data.identifierKey)
       : makeString(data.identifierChoice);
-  const identifierValue = normalizeIfDefined(makeString(data.identifierValue)) || '';
+  const identifierValue = normalizeIfDefined(data.identifierValue || '');
   const cacheKey = 'hubspot_contact_' + enc(identifierValue);
-  const storedUserData = templateDataStorage.getItemCopy(cacheKey);
+  const storedUserData = templateDataStorage.getItemCopy(cacheKey) || null;
 
-  if (storedUserData !== null) {
+  if (
+    storedUserData &&
+    getType(storedUserData) === 'object' &&
+    Object.keys(storedUserData).length
+  ) {
     return formatOutput(storedUserData, data.outputFormat);
   }
 
@@ -290,8 +294,11 @@ function sendRequest() {
   if (data.propertiesToRetrieve) {
     const sanitizedProperties = makeString(data.propertiesToRetrieve)
       .split(',')
-      .map((property) => normalizeIfDefined(property));
-    queryParams.push('properties=' + enc(sanitizedProperties));
+      .map((property) => enc(normalizeProperty(property)))
+      .filter((property) => property);
+    if (sanitizedProperties.length) {
+      queryParams.push('properties=' + sanitizedProperties.join(','));
+    }
   }
 
   if (queryParams.length) {
@@ -299,7 +306,7 @@ function sendRequest() {
   }
 
   log({
-    Name: 'HubspotLookup',
+    Name: 'HubSpotLookup',
     Type: 'Request',
     EventName: 'Lookup',
     RequestMethod: 'GET',
@@ -309,14 +316,13 @@ function sendRequest() {
   return sendHttpRequest(url, {
     method: 'GET',
     headers: {
-      Authorization: 'Bearer ' + data.apiAccessToken,
-      'Content-Type': 'application/json'
+      Authorization: 'Bearer ' + data.apiAccessToken
     },
     timeout: 3000
   })
     .then((result) => {
       log({
-        Name: 'HubspotLookup',
+        Name: 'HubSpotLookup',
         Type: 'Response',
         EventName: 'Lookup',
         ResponseStatusCode: result.statusCode,
@@ -335,7 +341,7 @@ function sendRequest() {
     })
     .catch((error) => {
       log({
-        Name: 'HubspotLookup',
+        Name: 'HubSpotLookup',
         Type: 'Message',
         EventName: 'Lookup',
         Message: 'API call failed or timed out',
@@ -359,23 +365,32 @@ function shouldExitEarly(data, eventData) {
 
 function formatOutput(userData, format) {
   const formattedData = {};
+  const userProperties = userData && userData.properties;
   if (format === 'custom') {
     if (!data.customProperties) return userData;
+
+    if (!userProperties) return userData || formattedData;
+
     const customPropertiesArray = data.customProperties
       .split(',')
-      .map((property) => normalizeIfDefined(property));
+      .map((property) => normalizeProperty(property))
+      .filter((property) => property);
 
     if (customPropertiesArray.length > 1) {
       customPropertiesArray.forEach((property) => {
-        formattedData[property] = userData.properties[property];
+        formattedData[property] = userProperties[property];
       });
       return formattedData;
-    } else return userData.properties[customPropertiesArray[0]];
+    } else return userProperties[customPropertiesArray[0]];
   }
   return userData;
 }
 
 function normalizeIfDefined(value) {
+  return value ? makeString(value).trim() : value;
+}
+
+function normalizeProperty(value) {
   return value ? makeString(value).toLowerCase().trim() : value;
 }
 
@@ -460,6 +475,8 @@ function determinateIsLoggingEnabledForBigQuery() {
   if (data.bigQueryLogType === 'no') return false;
   return data.bigQueryLogType === 'always';
 }
+
+
 
 
 ___SERVER_PERMISSIONS___
