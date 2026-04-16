@@ -1,5 +1,5 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/hubspot-lookup-variable/'
 versions:
-  - sha: '548f546516baf83537e42f805b88c862dd885f85'
+  - sha: 'ab648a1866bc452016999353a65290da994275a1'
     changeNotes: 'Initial release.'

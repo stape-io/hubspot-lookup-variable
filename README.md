@@ -14,7 +14,7 @@ This variable template retrieves contact information from the HubSpot CRM Contac
 
 ### HubSpot Authentication
 
-- **Private App Access Token**: Enter your HubSpot Private App Access Token to act as the Bearer token for API authorization. _(Note: Legacy API keys are deprecated; you must use a Private App token )._
+- **Private App Access Token**: Enter your HuåbSpot Private App Access Token to act as the Bearer token for API authorization. _(Note: Legacy API keys are deprecated; you must use a Private App token )._
 
 ### Lookup Parameters
 
