@@ -114,7 +114,7 @@ ___TEMPLATE_PARAMETERS___
           {
             "value": "custom",
             "displayValue": "Return custom properties",
-            "help": "A comma-separated list of user properties to return as an object (e.g., email,firstname,lastname,phone,city).\u003c/br\u003e\nFor the above example, the returned object would be \u003c/br\u003e\n\u003cb\u003e {\u003c/br\u003e\n  email: \u0027jane_doe@email.com\u0027, \u003c/br\u003e\n  firstname: \u0027Jane\u0027, \u003c/br\u003e\n  lastname: \u0027Doe\u0027, \u003c/br\u003e\n  phone: \u0027+5519981555555\u0027, \u003c/br\u003e\n  city: Testland \u003c/br\u003e\n} \u003c/b\u003e\u003c/br\u003e\nIf only one property is chosen, the variable will return its value instead of an object (key/value pair).",
+            "help": "A comma-separated list of user properties to return as an object (e.g., email,firstname,lastname,phone,city).\u003c/br\u003e\nFor the above example, the returned object would be \u003c/br\u003e\n\u003cb\u003e {\u003c/br\u003e\n\u0026emsp; email: \u0027jane_doe@email.com\u0027, \u003c/br\u003e\n\u0026emsp; firstname: \u0027Jane\u0027, \u003c/br\u003e \n\u0026emsp; lastname: \u0027Doe\u0027, \u003c/br\u003e\n\u0026emsp; phone: \u0027+5519981555555\u0027, \u003c/br\u003e\n\u0026emsp; city: Testland \u003c/br\u003e\n} \u003c/b\u003e\u003c/br\u003e\nIf only one property is chosen, the variable will return its value instead of an object (key/value pair).",
             "subParams": [
               {
                 "type": "TEXT",
@@ -252,6 +252,7 @@ const getType = require('getType');
 const JSON = require('JSON');
 const logToConsole = require('logToConsole');
 const makeString = require('makeString');
+const Object = require('Object');
 const sendHttpRequest = require('sendHttpRequest');
 const templateDataStorage = require('templateDataStorage');
 
@@ -475,8 +476,6 @@ function determinateIsLoggingEnabledForBigQuery() {
   if (data.bigQueryLogType === 'no') return false;
   return data.bigQueryLogType === 'always';
 }
-
-
 
 
 ___SERVER_PERMISSIONS___
