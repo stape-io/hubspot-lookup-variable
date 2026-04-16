@@ -1,0 +1,158 @@
+setup: |-
+  const Promise = require('Promise');
+  const JSON = require('JSON');
+
+  mockObject('templateDataStorage', {
+    getItemCopy: () => null,
+    setItemCopy: () => {}
+  });
+scenarios:
+  - name: Successful API Call - Returns All Data
+    code: |-
+      const mockData = {
+        apiAccessToken: 'mock-private-app-token',
+        identifierChoice: 'email',
+        identifierValue: 'johndoe@example.com',
+        outputFormat: 'all'
+      };
+
+      mock('sendHttpRequest', (url, options) => {
+        assertThat(url).isEqualTo(
+          'https://api.hubapi.com/crm/2026-03/objects/contacts/johndoe%40example.com?idProperty=email'
+        );
+        assertThat(options.headers.Authorization).isEqualTo('Bearer mock-private-app-token');
+
+        return Promise.create((resolve) => {
+          resolve({
+            statusCode: 200,
+            body: JSON.stringify({
+              properties: {
+                email: 'johndoe@example.com',
+                firstname: 'John',
+                lastname: 'Doe',
+                phone: '1234567890'
+              }
+            })
+          });
+        });
+      });
+
+      runCode(mockData).then((result) => {
+        assertThat(result.properties.email).isEqualTo('johndoe@example.com');
+        assertThat(result.properties.firstname).isEqualTo('John');
+        assertThat(result.properties.lastname).isEqualTo('Doe');
+        assertThat(result.properties.phone).isEqualTo('1234567890');
+      });
+  - name: Successful API Call - Returns Custom Properties Object
+    code: |-
+      const mockData = {
+        apiAccessToken: 'test-token',
+        identifierChoice: 'id',
+        identifierValue: '12345',
+        outputFormat: 'custom',
+        customProperties: 'email, firstname , Lastname'
+      };
+
+      mock('sendHttpRequest', (url, options) => {
+        assertThat(url).isEqualTo('https://api.hubapi.com/crm/2026-03/objects/contacts/12345');
+        return Promise.create((resolve) => {
+          resolve({
+            statusCode: 200,
+            body: JSON.stringify({
+              properties: {
+                email: 'janedoe@example.com',
+                firstname: 'Jane',
+                lastname: 'Doe' // This should be filtered out
+              }
+            })
+          });
+        });
+      });
+
+      runCode(mockData).then((result) => {
+        // Assert that it returns an object with ONLY the requested keys
+        assertThat(result).isEqualTo({
+          email: 'janedoe@example.com',
+          firstname: 'Jane',
+          lastname: 'Doe'
+        });
+        assertThat(result.phone).isUndefined();
+      });
+  - name: Uses Cached Data (Bypasses API)
+    code: |-
+      const mockData = {
+        apiAccessToken: 'test-token',
+        identifierChoice: 'email',
+        identifierValue: 'johndoe@example.com',
+        outputFormat: 'all'
+      };
+
+      mockObject('templateDataStorage', {
+        getItemCopy: (key) => {
+          if (key === 'hubspot_contact_johndoe%40example.com') {
+            return {
+              id: 12345,
+              properties: {
+                email: 'johndoe@example.com',
+                firstname: 'John',
+                lastname: 'Doe'
+              }
+            };
+          }
+          return null;
+        },
+        setItemCopy: () => {}
+      });
+
+      const result = runCode(mockData);
+      assertApi('sendHttpRequest').wasNotCalled();
+      assertThat(result.properties.email).isEqualTo('johndoe@example.com');
+  - name: Checks effectiveness of first guard clause
+    code: |-
+      const mockData = {
+        apiAccessToken: 'test-token',
+        identifierChoice: 'email',
+        identifierValue: 'test@test.com',
+        outputFormat: 'all'
+      };
+
+      let mockEventData = { page_location: 'https://gtm-msr.appspot.com/' };
+
+      mock('getAllEventData', () => mockEventData);
+
+      runCode(mockData);
+
+      assertApi('sendHttpRequest').wasNotCalled();
+  - name: Checks effectiveness of second guard clause
+    code: |-
+      const mockData = {
+        apiAccessToken: 'test-token',
+        identifierChoice: 'email',
+        identifierValue: false,
+        outputFormat: 'all'
+      };
+
+      runCode(mockData);
+
+      assertApi('sendHttpRequest').wasNotCalled();
+  - name: API Error Returns Undefined Safely
+    code: |-
+      const mockData = {
+        apiAccessToken: 'test-token',
+        identifierChoice: 'email',
+        identifierValue: 'not-found@example.com',
+        outputFormat: 'all'
+      };
+
+      mock('sendHttpRequest', (url, options) => {
+        return Promise.create((resolve) => {
+          resolve({
+            statusCode: 404,
+            body: JSON.stringify({ message: 'contact not found' })
+          });
+        });
+      });
+
+      runCode(mockData).then((result) => {
+        assertThat(result).isUndefined();
+      });
