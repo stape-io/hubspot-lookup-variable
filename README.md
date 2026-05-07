@@ -5,3 +5,6 @@ Hubspot Lookup Variable for Google Tag Manager Server Container can return a use
 ## Open Source
 
 Hubspot Lookup Variable for Google Tag Manager Server Container is developed and maintained by [Stape Team](https://stape.io/) under the Apache 2.0 license.
+
+### GTM Gallery Status
+🔴 Not listed
